@@ -627,3 +627,39 @@ Method query + Convert to Dto như sau:
  @Query("select new com.example.kiemtrajpa.dto.UserDto(u.id,u.name,u.email) from User u")
     List<UserDto> findAllUserDto();
 ```
+
+
+## Câu 13
+
+### TRẢ LỜI :
+
+Custom generate id để tạo id ngẫu nhiên cho đối tượng post như sau : 
+
+```java
+package com.example.kiemtrajpa.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "post")
+public class Post {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
+    @Column(name = "name")
+    private String name;
+
+    private String title;
+    
+
+}
+```
+

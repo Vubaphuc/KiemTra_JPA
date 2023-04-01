@@ -21,6 +21,8 @@ public class Post {
     @Column(name = "name")
     private String name;
 
+    private String title;
+
     @Column(name = "email")
     private String email;
 
