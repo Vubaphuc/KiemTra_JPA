@@ -697,7 +697,7 @@ public class UserService {
 
 }
 ```
-Trong `UserService.java` ta sử dụng Method `List<UserDto> findAll()` để lấy id, name, email theo yêu cầu đề bài.
+Trong `UserService.java` ta sử dụng Method `List<UserDto> findAll()` để xử lý theo yêu cầu đề bài.
 
 - JPQL Query :
 
