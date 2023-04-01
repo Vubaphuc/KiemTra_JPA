@@ -624,12 +624,82 @@ Viết câu lệnh query để tìm kiếm UserDto bao gồm các thuộc tính 
 
 - Method query + Convert to Dto : 
 
-```java
+Đầu tiên ta tạo class `UserMapper` và `UserDto` :
 
+`UserMapper.java`
+```java
+package com.example.kiemtrajpa.mapper;
+
+import com.example.kiemtrajpa.dto.UserDto;
+import com.example.kiemtrajpa.entity.User;
+
+public class UserMapper {
+
+    public static UserDto toUserDto (User user) {
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setName(user.getName());
+        userDto.setEmail(user.getEmail());
+
+        return userDto;
+    }
+}
 ```
 
+`UserDto.java`
+```java
+package com.example.kiemtrajpa.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserDto {
+    private Long id;
+    private String name;
+    private String email;
+}
+
+```
+Sau đó ta tạo `UserService.java` để xử lý yêu cầu trên.
+`UserService.java`
+```java
+package com.example.kiemtrajpa.service;
+
+
+import com.example.kiemtrajpa.dto.UserDto;
+import com.example.kiemtrajpa.entity.User;
+import com.example.kiemtrajpa.mapper.UserMapper;
+import com.example.kiemtrajpa.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    public List<UserDto> findAll() {
+        return userRepository.findAll()
+                .stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
+    }
+
+}
+```
+Trong `UserService.java` ta sử dụng Method `List<UserDto> findAll()` để lấy id, name, email theo yêu cầu đề bài.
+
 - JPQL Query :
-- 
 
 ```java
 package com.example.kiemtrajpa.repository;
@@ -649,7 +719,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 }
 ```
-
+Trong `UserRepository.java` ta sử dụng câu lênh Query để xử lý theo yêu cầu của đề bài.
 
 
 - Native Query : 
@@ -698,7 +768,7 @@ public class User {
 }
 ```
 
-Class `UserRepository.java` :
+Câu lệnh Query :
 
 ```java
 package com.example.kiemtrajpa.repository;
@@ -737,11 +807,29 @@ public interface  UserProjection {
 
 ```
 
-Câu lệnh Query : 
+Câu lệnh Query :
 
 ```java
+package com.example.kiemtrajpa.repository;
 
+import com.example.kiemtrajpa.dto.UserDto;
+import com.example.kiemtrajpa.dto.UserProjection;
+import com.example.kiemtrajpa.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
+
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    
+
+    //  Projection (inteface)
+    UserProjection findUserProjectionById(Integer id);
+
+}
 ```
+
 
 
 
