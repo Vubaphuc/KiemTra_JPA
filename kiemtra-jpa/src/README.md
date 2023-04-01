@@ -619,14 +619,131 @@ Trong Entity `Tag.java` ta dùng annotation  `@ManyToMany` để thiết lập q
 
 ### TRẢ LỜI :
 
-Viết câu lệnh query để tìm kiếm UserDto bao gồm các thuộc tính (id, name, email) theo cách sau
+Viết câu lệnh query để tìm kiếm UserDto bao gồm các thuộc tính (id, name, email) theo cách sau :
 
-Method query + Convert to Dto như sau: 
+
+- Method query + Convert to Dto : 
 
 ```java
- @Query("select new com.example.kiemtrajpa.dto.UserDto(u.id,u.name,u.email) from User u")
-    List<UserDto> findAllUserDto();
+
 ```
+
+- JPQL Query :
+- 
+
+```java
+package com.example.kiemtrajpa.repository;
+
+import com.example.kiemtrajpa.dto.UserDto;
+import com.example.kiemtrajpa.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
+
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    @Query("select new com.example.kiemtrajpa.dto.UserDto(u.id,u.name,u.email) from User u")
+    List<UserDto> findAllUserDto();
+    
+
+}
+```
+
+
+
+- Native Query : 
+
+Class `User.java`:
+
+```java
+package com.example.kiemtrajpa.entity;
+
+import com.example.kiemtrajpa.dto.UserDto;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+@SqlResultSetMappings(value = {
+        @SqlResultSetMapping(
+                name = "useInfo", // tên kết quả ở bước 1
+                classes = @ConstructorResult(
+                        targetClass = UserDto.class,
+                        columns = {
+                                @ColumnResult(name = "id", type = Integer.class),
+                                @ColumnResult(name = "name", type = String.class),
+                                @ColumnResult(name = "email", type = String.class)
+                        }
+                )
+        )
+})
+@NamedNativeQuery(
+        name = "getUserDto",
+        resultSetMapping = "useInfo",
+        query = "select u.id, u.name, u.email from user u")
+
+@Getter
+@Setter
+@Entity
+@Table(name = "user")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private Long id;
+    private String name;
+    private String email;
+    private String password;
+
+}
+```
+
+Class `UserRepository.java` :
+
+```java
+package com.example.kiemtrajpa.repository;
+
+import com.example.kiemtrajpa.dto.UserDto;
+import com.example.kiemtrajpa.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
+
+public interface UserRepository extends JpaRepository<User, Long> {
+    
+
+
+    @Query(nativeQuery = true, value = "getUserDto")
+    List<UserDto> findAllUserDto_Native();
+
+}
+```
+
+
+- Projection : 
+
+
+interface `UserProjection` :
+
+```java
+package com.example.kiemtrajpa.dto;
+
+public interface  UserProjection {
+    Integer getId();
+    String getName();
+    String getEmail();
+}
+
+```
+
+Câu lệnh Query : 
+
+```java
+
+```
+
+
 
 
 ## Câu 13
