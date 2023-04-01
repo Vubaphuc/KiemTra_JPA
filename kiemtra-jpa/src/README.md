@@ -265,6 +265,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 - `@NamedQuery`: được sử dụng để đặt tên và xác định một truy vấn cụ thể, mà có thể được thực thi bằng cách sử dụng tên của truy vấn đó trong mã Java. Điều này giúp giảm thiểu lỗi xảy ra trong mã Java và cho phép chúng ta quản lý truy vấn dễ dàng hơn.
 
 Ví Dụ: 
+Ta tạo 1 method lấy Post theo `name` trong class `Post.java`:
 
 ```java
 package com.example.kiemtrajpa.entity;
@@ -316,7 +317,31 @@ public class Post {
 }
 ```
 
+Sau khi tạo xong bên class `Post.java` ta sang `PostRepository` để gọi tới `NamedQuery` đã tạo bên class `Post.java`
+
+```java
+package com.example.kiemtrajpa.repository;
+
+
+import com.example.kiemtrajpa.entity.Post;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface PostRepository extends JpaRepository<Post, Long> {
+    
+    // NamedQuery
+    @Query(nativeQuery = true, value = "findPostByName")
+    List<Post> findPostByName_native(@Param("name") String name);
+}
+}
+```
+
 Trong ví dụ trên, `@NamedQuery` được sử dụng để đặt tên truy vấn tìm kiếm Post theo `name`, được định nghĩa trong Entity `Post`. Trong truy vấn, tham số `:name` được sử dụng để tìm kiếm theo tên cụ thể.
+Trong `PostRepository` ta sẽ gọi tới câu lệnh query trong `Post.java` bằng thuộc tính `name = "findPostByName"` trong `@NamedQuery`.
 
 - `@Query`: được sử dụng để xác định một truy vấn cụ thể bằng cách sử dụng cú pháp SQL hoặc JPQL (Java Persistence Query Language). Truy vấn này có thể được sử dụng trong mã Java để truy xuất và thay đổi dữ liệu.
 
